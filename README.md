@@ -1,3 +1,49 @@
+# About
+This is an adaptation on the docker-compose-v2.yml file from the zabbix-xxl repository. Beneath you can see information about the original project.
+
+# Usage
+The docker-compose file is located in Dockerfile/zabbix-xxl/samy/
+So go to the directory
+```
+$ git clone https://github.com/SamyCoenen/zabbix-xxl.git && cd zabbix-xxl/Dockerfile/zabbix-xxl/samy
+```
+
+Put your existing certificates for encryption and client authentication in ./certificates. There are already some example certificates available for the zabbix.vikingco.local domain.
+You will likely see a https if you don't import your own certificate. ![https](resources/Screenshot_https.png)
+
+Put all the existing certificatekeys in ./certificatekeys
+
+
+Change the api keys in the alertscripts/slack.sh script, full zabbix configuration guide for slack can be found [on the repository from the original author](https://github.com/ericoc/zabbix-slack-alertscript).
+It works great. ![slack](resources/Screenshot_slack.png)
+
+Change the hostname in nginx/nginx.config.
+
+And start everything with docker-compose
+```
+$ docker-compose up -d
+```
+
+Now import the client certificate client.p12 in your browser and go to your server IP or localhost.
+The browser will ask for the certificate .![certificate](resources/Screenshot_client_certificate.png)
+
+
+
+##### Self-signed certificates
+If you plan to use self-signed certificates, here are some commands that might be usefull
+
+```
+openssl pkcs12 -export -clcerts -in client.crt -inkey client.key -out client.p12
+
+openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 03 -out client.crt
+
+openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out client.crt
+
+openssl req -new -key client.key -out client.csr
+
+openssl genrsa -des3 -out client.key 1024
+```
+
 Zabbix XXL
 ==========
 
@@ -30,7 +76,7 @@ Compiled Zabbix (server, proxy, agent, java gateway, snmpd daemon) with almost a
 
 ### 2. [Docker image zabbix-db-mariadb](https://registry.hub.docker.com/u/monitoringartist/zabbix-db-mariadb/) [![](https://badge.imagelayers.io/monitoringartist/zabbix-db-mariadb:latest.svg)](https://imagelayers.io/?images=monitoringartist/zabbix-db-mariadb:latest)
 
-See [README of zabbix-db-mariadb](https://github.com/monitoringartist/zabbix-xxl/tree/master/Dockerfile/zabbix-db-mariadb) 
+See [README of zabbix-db-mariadb](https://github.com/monitoringartist/zabbix-xxl/tree/master/Dockerfile/zabbix-db-mariadb)
 for more details.
 
 MariaDB container customized for Zabbix.
@@ -39,18 +85,18 @@ MariaDB container customized for Zabbix.
 
 **2.4 is not supported version** - please use 3.0 version.
 
-See [README of zabbix-2.4](https://github.com/monitoringartist/zabbix-xxl/tree/master/Dockerfile/zabbix-2.4) 
+See [README of zabbix-2.4](https://github.com/monitoringartist/zabbix-xxl/tree/master/Dockerfile/zabbix-2.4)
 for more details.
 
-Compiled Zabbix with almost all features (MySQL support, Java, SNMP, 
-Curl, Ipmi, fping) and Zabbix web UI based on CentOS 7, Supervisor, Nginx, PHP. 
-Image requires external MySQL database (you can run MySQL also as Docker 
+Compiled Zabbix with almost all features (MySQL support, Java, SNMP,
+Curl, Ipmi, fping) and Zabbix web UI based on CentOS 7, Supervisor, Nginx, PHP.
+Image requires external MySQL database (you can run MySQL also as Docker
 container).
 
 Docker troubleshooting
 ======================
 
-Use docker command to see if all required containers are up and running: 
+Use docker command to see if all required containers are up and running:
 ```
 $ docker ps -f
 ```
@@ -61,14 +107,14 @@ $ docker logs zabbix
 ```
 
 Sometimes you might just want to review how things are deployed inside a running
- container, you can do this by executing a _bash shell_ through _docker's 
- exec_ command: 
+ container, you can do this by executing a _bash shell_ through _docker's
+ exec_ command:
 ```
 docker exec -ti zabbix /bin/bash
 ```
 
-History of an image and size of layers: 
-``` 
+History of an image and size of layers:
+```
 docker history --no-trunc=true monitoringartist/zabbix-xxl | tr -s ' ' | tail -n+2 | awk -F " ago " '{print $2}'
 ```
 
@@ -89,8 +135,8 @@ Run specific Zabbix version, e.g. 3.0.0 - just specify 3.0.0 tag for image:
 Customized Zabbix Docker images
 ===============================
 
-Recommended example how to build custom Zabbix server on top of base image is 
-[million12/docker-zabbix-server](https://github.com/million12/docker-zabbix-server). 
+Recommended example how to build custom Zabbix server on top of base image is
+[million12/docker-zabbix-server](https://github.com/million12/docker-zabbix-server).
 It provides custom features, such as Push notification, Slack and SMTP auth.
 
 Support
